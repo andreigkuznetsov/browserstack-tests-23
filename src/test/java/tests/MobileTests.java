@@ -13,13 +13,14 @@ import static io.appium.java_client.AppiumBy.accessibilityId;
 import static io.appium.java_client.AppiumBy.id;
 import static io.qameta.allure.Allure.step;
 
+@DisplayName("Тесты в приложении Wikipedia")
 public class MobileTests extends TestBase {
 
     TestData testData = new TestData();
 
     @Test
-    @DisplayName("Поиск на английском языке в приложении Wikipedia")
-    void searchTestEn() {
+    @DisplayName("Поиск на английском языке")
+    void searchEnTest() {
 
         step("Открываем строку поиска", () -> {
             $(accessibilityId("Search Wikipedia")).click();
@@ -35,10 +36,10 @@ public class MobileTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Переключение поиска на русский язык и поиск в приложении Wikipedia")
-    void searchTestRu() {
+    @DisplayName("Переключение поиска на русский язык и поиск")
+    void searchRuTest() {
 
-       step("Открываем меню Settings", () -> {
+        step("Открываем меню Settings", () -> {
             $(id("org.wikipedia.alpha:id/menu_overflow_button")).click();
             $(id("org.wikipedia.alpha:id/explore_overflow_settings")).click();
         });
@@ -69,13 +70,26 @@ public class MobileTests extends TestBase {
             $$(id("org.wikipedia.alpha:id/page_list_item_title"))
                     .shouldHave(sizeGreaterThan(testData.stringNumber));
         });
+    }
+
+    @Test
+    @DisplayName("Открытие первой статьи в результатах поиска")
+    void checkTheErrorInsteadTheArticleTextTest() {
+
+        step("Открываем строку поиска", () -> {
+            $(accessibilityId("Search Wikipedia")).click();
+        });
+
+        step("Вводим поисковое слово", () -> {
+            $(id("org.wikipedia.alpha:id/search_src_text")).sendKeys(testData.enSearchWord);
+        });
 
         step("Находим заголовок первой статьи и открываем ее", () -> {
-            $$(id("org.wikipedia.alpha:id/view_card_header_title")).first().click();
+            $$(id("org.wikipedia.alpha:id/page_list_item_container")).first().click();
         });
 
         step("Проверяем, что отображается сообщение об ошибке", () -> {
-        $(byClassName("android.widget.TextView")).shouldHave(Condition.text(testData.errorMessage));
+            $(byClassName("android.widget.TextView")).shouldHave(Condition.text(testData.errorMessage));
         });
     }
 }
